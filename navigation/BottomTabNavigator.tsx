@@ -13,6 +13,7 @@ import HomeScreen from "../screens/HomeScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
 import { BottomTabParamList, HomeParamList, TabTwoParamList } from "../types";
 import { AntDesign, MaterialIcons, Ionicons } from "@expo/vector-icons";
+import MovieDetailScreen from "../screens/MovieDetailsScreen";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -69,6 +70,11 @@ const HomeStack = createStackNavigator<HomeParamList>();
 function TabOneNavigator() {
   return (
     <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="MovieDetailScreen"
+        component={MovieDetailScreen}
+        options={{ title: "", headerShown: true }}
+      />
       <HomeStack.Screen
         name="HomeScreen"
         component={HomeScreen}

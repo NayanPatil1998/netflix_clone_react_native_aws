@@ -14,20 +14,25 @@ import {
 import EpisodeItem from "../../components/EpisodeItem";
 import { FlatList } from "react-native-gesture-handler";
 import { Picker } from "@react-native-picker/picker";
+import VideoPlayer from "../../components/VideoPlayer";
 
 const MovieDetailScreen = () => {
-  const firstEpisode = movie.seasons.items[0].episodes.items[0];
   const firstSeason = movie.seasons.items[0];
   const seasonNames = movie.seasons.items.map((season) => season.name);
   const [currentSeason, setCurrentSeason] = useState(firstSeason);
+  const [currentEpisode, setCurrentEpisode] = useState(
+    firstSeason.episodes.items[0]
+  );
 
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={{ uri: firstEpisode.poster }} />
+      <VideoPlayer episode={currentEpisode} />
 
       <FlatList
         data={currentSeason.episodes.items}
-        renderItem={({ item }) => <EpisodeItem episode={item} />}
+        renderItem={({ item }) => (
+          <EpisodeItem onPress={setCurrentEpisode} episode={item} />
+        )}
         style={{ marginBottom: 30 }}
         ListHeaderComponent={
           <View style={{ padding: 12 }}>

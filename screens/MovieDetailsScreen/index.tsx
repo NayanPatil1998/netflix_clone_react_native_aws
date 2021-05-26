@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View } from "../../components/Themed";
 import styles from "./styles";
-import { Image, Pressable } from "react-native";
-import movie from "../../assets/data/movie";
+import movies from "../../assets/data/movie";
+import { ActivityIndicator, Image, Pressable } from "react-native";
 import {
   AntDesign,
   Entypo,
@@ -15,14 +15,29 @@ import EpisodeItem from "../../components/EpisodeItem";
 import { FlatList } from "react-native-gesture-handler";
 import { Picker } from "@react-native-picker/picker";
 import VideoPlayer from "../../components/VideoPlayer";
+import { Movie } from "../../src/models";
+import { DataStore } from "@aws-amplify/datastore";
+import { useRoute } from "@react-navigation/core";
 
 const MovieDetailScreen = () => {
-  const firstSeason = movie.seasons.items[0];
-  const seasonNames = movie.seasons.items.map((season) => season.name);
+  const [movie, setMovie] = useState<Movie | undefined>(undefined);
+  const firstSeason = movies.seasons.items[0];
+  const seasonNames: any[] = [];
   const [currentSeason, setCurrentSeason] = useState(firstSeason);
   const [currentEpisode, setCurrentEpisode] = useState(
     firstSeason.episodes.items[0]
   );
+  const route = useRoute();
+  useEffect(() => {
+    const fetchMovie = async () => {
+      setMovie(await DataStore.query(Movie, route?.params?.id));
+    };
+    fetchMovie();
+  }, []);
+
+  if (!movie) {
+    return <ActivityIndicator style={{ borderColor: "white" }} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -36,15 +51,15 @@ const MovieDetailScreen = () => {
         style={{ marginBottom: 30 }}
         ListHeaderComponent={
           <View style={{ padding: 12 }}>
-            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.title}>{movie?.title}</Text>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.match}>98% match</Text>
-              <Text style={styles.year}>{movie.year}</Text>
+              <Text style={styles.year}>{movie?.year}</Text>
               <View style={styles.ageContainer}>
                 <Text style={styles.age}>12+</Text>
               </View>
               <Text style={styles.seasons}>
-                {movie.numberOfSeasons} seasons
+                {movie?.numberOfSeasons} seasons
               </Text>
               <MaterialIcons name="hd" size={24} color="white" />
             </View>
@@ -66,10 +81,10 @@ const MovieDetailScreen = () => {
               <Text style={styles.downloadButtonText}>Download</Text>
             </Pressable>
 
-            <Text style={{ marginVertical: 5 }}>{movie.plot}</Text>
+            <Text style={{ marginVertical: 5 }}>{movie?.plot}</Text>
 
-            <Text style={styles.year}>Cast: {movie.cast}</Text>
-            <Text style={styles.year}>Creator: {movie.creator}</Text>
+            <Text style={styles.year}>Cast: {movie?.cast}</Text>
+            <Text style={styles.year}>Creator: {movie?.creator}</Text>
 
             {/* Row with icon Buttons */}
             <View style={{ flexDirection: "row", marginVertical: 15 }}>
@@ -86,10 +101,10 @@ const MovieDetailScreen = () => {
                 <Text style={{ color: "darkgrey", marginTop: 5 }}>Share</Text>
               </View>
             </View>
-            <Picker
+            {/* <Picker
               selectedValue={currentSeason.name}
               onValueChange={(itemValue, itemIndex) => {
-                setCurrentSeason(movie.seasons.items[itemIndex]);
+                setCurrentSeason(movie?.seasons.items[itemIndex]);
               }}
               dropdownIconColor={"white"}
               style={{ color: "white", width: 130 }}
@@ -101,7 +116,7 @@ const MovieDetailScreen = () => {
                   key={seasonName}
                 />
               ))}
-            </Picker>
+            </Picker> */}
           </View>
         }
       />
